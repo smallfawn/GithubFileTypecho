@@ -5,7 +5,7 @@
  * @package GithubFileTypecho
  * @author XiaoLu
  * @link https://onecc.cc/
- * @version v1.0.0
+ * @version v1.0.1
  * @dependence 1.0-*
  *
  */
@@ -78,7 +78,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
                             async: true,
                             type: "GET",
                             success: function (data) {
-                                var now = "v1.0.0";
+                                var now = "1.0.1";
                                 var newest = data[0][\'tag_name\'];
                                 if(newest == null){
                                     notice = "检查更新失败，请手动访问插件项目地址获取更新。";
@@ -122,6 +122,8 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         $github_token = new Typecho_Widget_Helper_Form_Element_Text('githubToken', NULL, '', _t('Github账号token'), _t('不知道如何获取账号token请百度'));
         $github_directory = new Typecho_Widget_Helper_Form_Element_Text('githubDirectory',
             NULL, '/usr/uploads', _t('Github仓库内的上传目录'), _t('比如/usr/uploads，最后一位不需要斜杠'));
+        $github_branch = new Typecho_Widget_Helper_Form_Element_Text('githubBranch',
+        NULL, 'main', _t('Github仓库的分支'), _t('大部分为main和master默认为main'));
         $url_type = new Typecho_Widget_Helper_Form_Element_Select('urlType', array('directtest' => '访问最新版本', 'direct' => '直接访问'), 'latest', _t('文件链接访问方式：'), _t('建议选择"访问最新版本"。若修改图片，直接访问方式不方便更新缓存。'));
         $desc3 = new Typecho_Widget_Helper_Form_Element_Text('desc3', NULL, '', _t('由于Linux权限问题，可能会由于无法创建目录导致文件保存到本地失败而报错异常，请给予本地上传目录777权限。<br>您也可以选择不保存到本地，但可能导致您的主题或其他插件的某些功能异常。<br>您也可以在每一月手动创建当月的目录，避免出现目录创建失败问题（推荐）。'));
         $if_save = new Typecho_Widget_Helper_Form_Element_Select('ifSave', array('save' => '保存到本地', 'notsave' => '不保存到本地'), 'save', _t('是否保存在本地：'), _t('是否将上传的文件保存在本地。'));
@@ -129,13 +131,14 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         $commit_name = new Typecho_Widget_Helper_Form_Element_Text('commitName', NULL, 'GithubFileTypecho', _t('提交文件者名称'), _t('提交Commit的提交者名称，留空则为仓库所属者。'));
         $commit_email = new Typecho_Widget_Helper_Form_Element_Text('commitEmail', NULL, 'xxx@xxx.com', _t('提交文件者邮箱'), _t('提交Commit的提交者邮箱，留空则为仓库所属者。'));
         $github_proxy = new Typecho_Widget_Helper_Form_Element_Text('githubProxy',
-            NULL, '', _t('Github加速代理'), _t('Github加速代理，代理更新地址http://onecc.cc，首页置顶找不到请搜索或者联系博主'));
+            NULL, 'http://ghproxy.com/', _t('Github加速代理'), _t('Github加速代理，代理更新地址http://onecc.cc，首页置顶找不到请搜索或者联系博主'));
 
         $form->addInput($desc1);
         $form->addInput($github_user->addRule('required', _t('请输入Github用户名')));
         $form->addInput($github_repo->addRule('required', _t('请输入Github仓库名')));
         $form->addInput($github_token->addRule('required', _t('请输入Github账号token')));
         $form->addInput($github_directory->addRule('required', _t('请输入Github上传目录')));
+        $form->addInput($github_branch->addRule('required', _t('请输入Github仓库分支')));
         $form->addInput($url_type);
         $form->addInput($desc3);
         $form->addInput($if_save);
@@ -408,7 +411,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
     public static function attachmentDataHandle($content)
     {
         $options = Typecho_Widget::widget('Widget_Options')->plugin('GithubFileTypecho');
-        $filePath = $options->githubProxy . "https://raw.githubusercontent.com/" . $options->githubUser . "/" . $options->githubRepo . "/main/" . $content['attachment']->path;
+        $filePath = $options->githubProxy . "https://raw.githubusercontent.com/" . $options->githubUser . "/" . $options->githubRepo . "/" . $options->githubBranch . "/" . $content['attachment']->path;
         return file_get_contents($filePath);
     }
 
@@ -424,7 +427,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         if ($options->urlType == "latest") {
             $latest = "@latest";
         }
-        return Typecho_Common::url($content['attachment']->path, $options->githubProxy . "https://raw.githubusercontent.com/" . $options->githubUser . "/" . $options->githubRepo . "/main/" . $latest);
+        return Typecho_Common::url($content['attachment']->path, $options->githubProxy . "https://raw.githubusercontent.com/" . $options->githubUser . "/" . $options->githubRepo . "/" . $options->githubBranch . "/" . $latest);
     }
 
     private static function writeErrorLog($path, $content)
