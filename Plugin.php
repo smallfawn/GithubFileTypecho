@@ -4,7 +4,6 @@
  *
  * @package GithubFileTypecho
  * @author XiaoLu
- * @link https://onecc.cc/
  * @version v1.0.1
  * @dependence 1.0-*
  *
@@ -74,7 +73,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
                         document.getElementsByName("desc3")[0].type = "hidden";
                         var notice = "正在检查更新...";
                         $.ajax({
-                            url: "https://api.github.com/repos/zhaoshicong/GithubFileTypecho/releases",
+                            url: "https://api.github.com/repos/smallfawn/GithubFileTypecho/releases",
                             async: true,
                             type: "GET",
                             success: function (data) {
@@ -85,7 +84,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
                                 }else if(newest == now){
                                     notice = "您当前的插件是最新版本：" + newest + "已是最新版本。";
                                 } else {
-                                    notice = "插件需要更新，当前版本：v" + now + "，最新版本：" + newest + "。<a href=\'https://github.com/zhaoshicong/GithubFileTypecho\'>点击这里</a>获取最新版本。";
+                                    notice = "插件需要更新，当前版本：v" + now + "，最新版本：" + newest + "。<a href=\'https://github.com/smallfawn/GithubFileTypecho\'>点击这里</a>获取最新版本。";
                                 }
                                 $(\'#GithubFileTypecho-check-update\').html(notice);
                             },
@@ -104,34 +103,59 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         <ol>
         <li>本插件用于将文章附件(如图片)上传至您的(公开的)Github的仓库中，并使用raw.github访问仓库文件达到优化文件访问速度的目的。<br></li>
         <li>原作者项目地址：<a href='https://github.com/AyagawaSeirin/UploadGithubForTypecho' target='_blank'>https://github.com/AyagawaSeirin/UploadGithubForTypecho</a><br></li>
-        <li>小鹿修改项目仓库：<a href='https://github.com/zhaoshicong/GithubFileTypecho' target='_blank'>
-        https://github.com/zhaoshicong/GithubFileTypecho</a><br></li>
+        <li>小鹿修改项目仓库：<a href='https://github.com/smallfawn/GithubFileTypecho' target='_blank'>
+        https://github.com/smallfawn/GithubFileTypecho</a><br></li>
         <li>插件使用说明与教程：插件上传至/usr/plugins/目录下解压，在网站后台启用插件后按说明配置即可<br></li>
         <li>插件不会验证配置的正确性，请自行确认配置信息正确，否则不能正常使用。<br></li>
         <li>插件会替换所有之前上传的文件的链接，若启用插件前存在已上传的文件，请自行将其上传至仓库相同目录中以保证正常显示；同时，禁用插件也会导致链接恢复。上传的文件保存在本地的问题请看下面相关配置项。</li>
         <li>注意：</li>
         <li>Github API限制每个IP每小时只能请求60次接口，请控制您操作图片(上传修改删除)的频率。</li>
-        <li>二次修改作者author:小鹿QQ860562056 站点onecc.cc修复jsDNS在国内无法访问问题，增加github加速代理</li>
+        <li>二次修改作者author:小鹿 修复jsDNS在国内无法访问问题，增加github加速代理</li>
         <li>代理加速请带https://和结尾要带/否则无法正常使用</li>
         </ol>
         "));
-        $github_user = new Typecho_Widget_Helper_Form_Element_Text('githubUser',
-            NULL, '', _t('Github用户名'), _t('您的Github用户名'));
-        $github_repo = new Typecho_Widget_Helper_Form_Element_Text('githubRepo',
-            NULL, '', _t('Github仓库名'), _t('您的Github仓库名'));
+        $github_user = new Typecho_Widget_Helper_Form_Element_Text(
+            'githubUser',
+            NULL,
+            '',
+            _t('Github用户名'),
+            _t('您的Github用户名')
+        );
+        $github_repo = new Typecho_Widget_Helper_Form_Element_Text(
+            'githubRepo',
+            NULL,
+            '',
+            _t('Github仓库名'),
+            _t('您的Github仓库名')
+        );
         $github_token = new Typecho_Widget_Helper_Form_Element_Text('githubToken', NULL, '', _t('Github账号token'), _t('不知道如何获取账号token请百度'));
-        $github_directory = new Typecho_Widget_Helper_Form_Element_Text('githubDirectory',
-            NULL, '/usr/uploads', _t('Github仓库内的上传目录'), _t('比如/usr/uploads，最后一位不需要斜杠'));
-        $github_branch = new Typecho_Widget_Helper_Form_Element_Text('githubBranch',
-        NULL, 'main', _t('Github仓库的分支'), _t('大部分为main和master默认为main'));
+        $github_directory = new Typecho_Widget_Helper_Form_Element_Text(
+            'githubDirectory',
+            NULL,
+            '/usr/uploads',
+            _t('Github仓库内的上传目录'),
+            _t('比如/usr/uploads，最后一位不需要斜杠')
+        );
+        $github_branch = new Typecho_Widget_Helper_Form_Element_Text(
+            'githubBranch',
+            NULL,
+            'main',
+            _t('Github仓库的分支'),
+            _t('大部分为main和master默认为main')
+        );
         $url_type = new Typecho_Widget_Helper_Form_Element_Select('urlType', array('directtest' => '访问最新版本', 'direct' => '直接访问'), 'latest', _t('文件链接访问方式：'), _t('建议选择"访问最新版本"。若修改图片，直接访问方式不方便更新缓存。'));
         $desc3 = new Typecho_Widget_Helper_Form_Element_Text('desc3', NULL, '', _t('由于Linux权限问题，可能会由于无法创建目录导致文件保存到本地失败而报错异常，请给予本地上传目录777权限。<br>您也可以选择不保存到本地，但可能导致您的主题或其他插件的某些功能异常。<br>您也可以在每一月手动创建当月的目录，避免出现目录创建失败问题（推荐）。'));
         $if_save = new Typecho_Widget_Helper_Form_Element_Select('ifSave', array('save' => '保存到本地', 'notsave' => '不保存到本地'), 'save', _t('是否保存在本地：'), _t('是否将上传的文件保存在本地。'));
         $desc2 = new Typecho_Widget_Helper_Form_Element_Text('desc2', NULL, '', _t('以下两个参数为选填，留空则为仓库所有者信息。若填写则必须两个都填写。如果您不知道该如何填写，默认即可，不需要修改。'));
         $commit_name = new Typecho_Widget_Helper_Form_Element_Text('commitName', NULL, 'GithubFileTypecho', _t('提交文件者名称'), _t('提交Commit的提交者名称，留空则为仓库所属者。'));
         $commit_email = new Typecho_Widget_Helper_Form_Element_Text('commitEmail', NULL, 'xxx@xxx.com', _t('提交文件者邮箱'), _t('提交Commit的提交者邮箱，留空则为仓库所属者。'));
-        $github_proxy = new Typecho_Widget_Helper_Form_Element_Text('githubProxy',
-            NULL, 'http://ghproxy.com/', _t('Github加速代理'), _t('Github加速代理，代理更新地址http://onecc.cc，首页置顶找不到请搜索或者联系博主'));
+        $github_proxy = new Typecho_Widget_Helper_Form_Element_Text(
+            'githubProxy',
+            NULL,
+            'http://ghproxy.com/',
+            _t('Github加速代理'),
+            _t('Github加速代理，如果上面不可用则百度搜索其他代理')
+        );
 
         $form->addInput($desc1);
         $form->addInput($github_user->addRule('required', _t('请输入Github用户名')));
@@ -199,7 +223,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
             "Authorization: token " . $options->githubToken
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path_relatively );
+        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path_relatively);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
@@ -210,7 +234,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         curl_close($ch);
 
         if ($http_code != 201) {
-            $output = json_decode($output,true);
+            $output = json_decode($output, true);
             self::writeErrorLog($path_relatively, "[Github][upload][" . $http_code . "]" . $output['message']);
         }
 
@@ -266,7 +290,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         $fileContent = file_get_contents($uploadfile);
 
         //判断仓库内相对路径
-        $filename = __TYPECHO_ROOT_DIR__ . $path;//本地文件绝对路径
+        $filename = __TYPECHO_ROOT_DIR__ . $path; //本地文件绝对路径
         $github_path = $options->githubDirectory . str_replace(self::getUploadDir(), "", $content['attachment']->path);
 
         //获取文件sha
@@ -313,7 +337,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         curl_close($ch);
 
         if ($http_code != 200) {
-            $output = json_decode($output,true);
+            $output = json_decode($output, true);
             self::writeErrorLog($github_path, "[Github][modify][" . $http_code . "]" . $output['message']);
         }
 
@@ -394,7 +418,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         curl_close($ch);
 
         if ($http_code != 200) {
-            $output = json_decode($output,true);
+            $output = json_decode($output, true);
             self::writeErrorLog($github_path, "[Github][delete][" . $http_code . "]" . $output['message']);
         }
         //删除本地文件
@@ -468,8 +492,10 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
                 return self::UPLOAD_DIR;
             }
         } else {
-            return Typecho_Common::url(defined('__TYPECHO_UPLOAD_DIR__') ? __TYPECHO_UPLOAD_DIR__ : self::UPLOAD_DIR,
-                defined('__TYPECHO_UPLOAD_ROOT_DIR__') ? __TYPECHO_UPLOAD_ROOT_DIR__ : __TYPECHO_ROOT_DIR__);
+            return Typecho_Common::url(
+                defined('__TYPECHO_UPLOAD_DIR__') ? __TYPECHO_UPLOAD_DIR__ : self::UPLOAD_DIR,
+                defined('__TYPECHO_UPLOAD_ROOT_DIR__') ? __TYPECHO_UPLOAD_ROOT_DIR__ : __TYPECHO_ROOT_DIR__
+            );
         }
     }
 
