@@ -1,4 +1,5 @@
-# GithubFileTypecho
+# UploadGithubForTypecho
+# 下载代码后解压把文件夹名字改为UploadGithubForTypecho
 # Typecho插件-Github图床
 # Typecho插件-Github图床 基于https://github.com/AyagawaSeirin/UploadGithubForTypecho 原作者的二改版.= = v1.0.0 更新内容
 
