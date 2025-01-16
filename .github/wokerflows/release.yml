@@ -1,0 +1,52 @@
+name: 打包并发布到Release
+
+on:
+  push:
+    branches:
+      - main  # 指定触发工作流的分支
+  workflow_dispatch:  # 允许手动触发该工作流
+
+jobs:
+  build:
+    name: 打包工作
+    runs-on: ubuntu-latest
+    steps:
+      - name: 克隆代码
+        uses: actions/checkout@v4
+        with:
+          ref: main  # 指定主分支
+
+      # 根据项目实际情况，添加安装依赖等步骤
+      # 例如对于Node.js项目
+      # - name: 指定Node.js版本
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "20"  # 指定 Node.js 20 版本
+      # - name: 安装依赖
+      #   run: npm ci
+
+      - name: 读取版本号
+        id: read_version
+        run: |
+          # 读取.version文件中的版本号内容
+          VERSION=$(cat .version)
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "读取到的版本号为：${VERSION}"
+
+      - name: 打包代码
+        id: package_code
+        run: |
+          # 根据项目实际情况进行打包，这里以zip打包为例
+          zip -r code_package.zip .  # 将当前目录下所有文件打包为code_package.zip
+          echo "打包完成，生成的包为：code_package.zip"
+
+      - name: 创建Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}  # 使用读取到的版本号作为tag_name
+          name: Release ${{ env.VERSION }}  # Release名称
+          draft: false  # 是否为草稿，false表示直接发布
+          prerelease: false  # 是否为预发布版本，false表示正式版本
+          files: |
+            code_package.zip  # 上传打包后的文件
