@@ -3,7 +3,7 @@
  * 附件上传Github仓库插件
  *
  * @package UploadGithubForTypecho
- * @author AyagawaSeirin
+ * @author smallfawn
  * @link https://qwq.best/
  * @version 1.1.1
  * @dependence 1.0-*
@@ -76,7 +76,7 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
                         document.getElementsByName("desc3")[0].type = "hidden";
                         var notice = "正在检查更新...";
                         $.ajax({
-                            url: "https://ghproxy.smallfawn.work/https://api.github.com/repos/AyagawaSeirin/UploadGithubForTypecho/releases",
+                            url: "https://ghproxy.smallfawn.work/https://api.github.com/repos/smallfawn/UploadGithubForTypecho/releases",
                             async: true,
                             type: "GET",
                             success: function (data) {
@@ -87,7 +87,7 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
                                 }else if(newest == now){
                                     notice = "您当前的插件是最新版本：v" + newest;
                                 } else {
-                                    notice = "插件需要更新，当前版本：v" + now + "，最新版本：v" + newest + "。<a href=\'https://github.com/AyagawaSeirin/UploadGithubForTypecho\'>点击这里</a>获取最新版本。";
+                                    notice = "插件需要更新，当前版本：v" + now + "，最新版本：v" + newest + "。<a href=\'https://github.com/smallfawn/UploadGithubForTypecho\'>点击这里</a>获取最新版本。";
                                 }
                                 $(\'#UploadGithubForTypecho-check-update\').html(notice);
                             },
