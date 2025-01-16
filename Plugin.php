@@ -5,7 +5,7 @@
  * @package UploadGithubForTypecho
  * @author smallfawn
  * @link https://qwq.best/
- * @version 1.1.1
+ * @version 1.1.3
  * @dependence 1.0-*
  *
  */
@@ -80,7 +80,7 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
                             async: true,
                             type: "GET",
                             success: function (data) {
-                                var now = "1.1.2";
+                                var now = "1.1.3";
                                 var newest = data[0][\'tag_name\'];
                                 if(newest == null){
                                     notice = "检查更新失败，请手动访问插件项目地址获取更新。";
@@ -110,10 +110,11 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
         <li>插件使用说明与教程：<a href='https://www.bilibili.com/read/cv4627037' target='_blank'>https://www.bilibili.com/read/cv4627037</a><br></li>
         <li>插件不会验证配置的正确性，请自行确认配置信息正确，否则不能正常使用。<br></li>
         <li>插件会替换所有之前上传的文件的链接，若启用插件前存在已上传的文件，请自行将其上传至仓库相同目录中以保证正常显示；同时，禁用插件也会导致链接恢复。上传的文件保存在本地的问题请看下面相关配置项。</li>
-        <li>注意：由于CDN缓存问题，修改文件后访问链接可能仍然是旧文件，所以建议删掉旧文件再上传新文件，不建议使用修改文件功能。jsDelivr刷新缓存功能暂未推出，推出后本插件会及时更新。</li>
         <li>Github API限制每个IP每小时只能请求60次接口，请控制您操作图片(上传修改删除)的频率。</li>
+        <li>Github API 和Github 代理 smallfawn修改了一些api反代 两个可以写一样的 开源地址：<a href='https://github.com/smallfawn/gh-proxy' target='_blank'>https://github.com/smallfawn/gh-proxy</a><br></li>
         </ol>
         "));
+        //<li>注意：由于CDN缓存问题，修改文件后访问链接可能仍然是旧文件，所以建议删掉旧文件再上传新文件，不建议使用修改文件功能。jsDelivr刷新缓存功能暂未推出，推出后本插件会及时更新。</li>
         $github_user = new Typecho_Widget_Helper_Form_Element_Text('githubUser',
             NULL, '', _t('Github用户名'), _t('您的Github用户名'));
         $github_repo = new Typecho_Widget_Helper_Form_Element_Text('githubRepo',
@@ -210,7 +211,7 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
             "Authorization: token " . $options->githubToken
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path_relatively );
+        curl_setopt($ch, CURLOPT_URL, $options->githubApiProxy . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path_relatively );
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
@@ -286,7 +287,7 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
             "User-Agent:" . $options->githubRepo
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,  "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path);
+        curl_setopt($ch, CURLOPT_URL, $options->githubApiProxy . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -313,7 +314,7 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
             "User-Agent:" . $options->githubRepo
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,  "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path . "?access_token=" . $options->githubToken);
+        curl_setopt($ch, CURLOPT_URL, $options->githubApiProxy . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path . "?access_token=" . $options->githubToken);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
@@ -368,7 +369,7 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
             "User-Agent:" . $options->githubRepo
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,  "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path);
+        curl_setopt($ch, CURLOPT_URL,  $options->githubApiProxy . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -394,7 +395,7 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
             "User-Agent:" . $options->githubRepo
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path . "?access_token=" . $options->githubToken);
+        curl_setopt($ch, CURLOPT_URL, $options->githubApiProxy . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path . "?access_token=" . $options->githubToken);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
