@@ -45,7 +45,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}  # 使用读取到的版本号作为tag_name
-          name: Release ${{ env.VERSION }}  # Release名称
+          name: ${{ env.VERSION }}  # Release名称
           draft: false  # 是否为草稿，false表示直接发布
           prerelease: false  # 是否为预发布版本，false表示正式版本
           files: |
