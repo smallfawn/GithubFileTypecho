@@ -322,11 +322,12 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
             $data['committer'] = $committer;
         }
         $header = array(
-            "Content-Type:application/json",
-            "User-Agent:" . $options->githubRepo
+            "Content-Type:application/vnd.github.v3.json",
+            "User-Agent:" . $options->githubRepo,
+            "Authorization: token " . $options->githubToken
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path . "?access_token=" . $options->githubToken);
+        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path_relatively );
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
