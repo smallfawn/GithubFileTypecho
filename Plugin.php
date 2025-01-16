@@ -1,15 +1,16 @@
 <?php
 /**
- * 附件上传Github仓库插件（github存储）
+ * 附件上传Github仓库插件
  *
- * @package GithubFileTypecho
- * @author XiaoLu
- * @version v1.0.1
+ * @package UploadGithubForTypecho
+ * @author AyagawaSeirin
+ * @link https://qwq.best/
+ * @version 1.1.1
  * @dependence 1.0-*
  *
  */
 
-class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
+class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
 {
     //上传文件目录
     const UPLOAD_DIR = '/usr/uploads';
@@ -20,11 +21,11 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
      */
     public static function activate()
     {
-        Typecho_Plugin::factory('Widget_Upload')->uploadHandle = array('GithubFileTypecho_Plugin', 'uploadHandle');
-        Typecho_Plugin::factory('Widget_Upload')->modifyHandle = array('GithubFileTypecho_Plugin', 'modifyHandle');
-        Typecho_Plugin::factory('Widget_Upload')->deleteHandle = array('GithubFileTypecho_Plugin', 'deleteHandle');
-        Typecho_Plugin::factory('Widget_Upload')->attachmentHandle = array('GithubFileTypecho_Plugin', 'attachmentHandle');
-        Typecho_Plugin::factory('Widget_Upload')->attachmentDataHandle = array('GithubFileTypecho_Plugin', 'attachmentDataHandle');
+        Typecho_Plugin::factory('Widget_Upload')->uploadHandle = array('UploadGithubForTypecho_Plugin', 'uploadHandle');
+        Typecho_Plugin::factory('Widget_Upload')->modifyHandle = array('UploadGithubForTypecho_Plugin', 'modifyHandle');
+        Typecho_Plugin::factory('Widget_Upload')->deleteHandle = array('UploadGithubForTypecho_Plugin', 'deleteHandle');
+        Typecho_Plugin::factory('Widget_Upload')->attachmentHandle = array('UploadGithubForTypecho_Plugin', 'attachmentHandle');
+        Typecho_Plugin::factory('Widget_Upload')->attachmentDataHandle = array('UploadGithubForTypecho_Plugin', 'attachmentDataHandle');
         return _t('插件已激活，请前往设置');
     }
 
@@ -43,7 +44,9 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         return _t('插件已禁用');
     }
 
-
+    //http://ghproxy.net/https://raw.githubusercontent.com/smallfawn/typechocloud/main/@latest/usr/uploads/2025/01/2071610814.jpg
+    //http://ghproxy.nethttps://raw.githubusercontent.com/shiyueGG/typechoSitemap/refs/heads/main/Sitemap/Action.php
+    //http://ghproxy.net/https://raw.githubusercontent.com/smallfawn/typechocloud/refs/heads/main/README.md
     /**
      * 插件配置面板
      */
@@ -64,7 +67,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
                 }
                 </style>
                 <script src="https://cdn.jsdelivr.net/gh/jquery/jquery/dist/jquery.min.js"></script>
-                <p id="GithubFileTypecho-check-update" class="notice">正在检查插件更新...</p>
+                <p id="UploadGithubForTypecho-check-update" class="notice">正在检查插件更新...</p>
                 <script>
                     window.onload = function()
                     {
@@ -73,24 +76,24 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
                         document.getElementsByName("desc3")[0].type = "hidden";
                         var notice = "正在检查更新...";
                         $.ajax({
-                            url: "https://api.github.com/repos/smallfawn/GithubFileTypecho/releases",
+                            url: "https://ghproxy.smallfawn.work/https://api.github.com/repos/AyagawaSeirin/UploadGithubForTypecho/releases",
                             async: true,
                             type: "GET",
                             success: function (data) {
-                                var now = "1.0.1";
+                                var now = "1.1.0";
                                 var newest = data[0][\'tag_name\'];
                                 if(newest == null){
                                     notice = "检查更新失败，请手动访问插件项目地址获取更新。";
                                 }else if(newest == now){
-                                    notice = "您当前的插件是最新版本：" + newest + "已是最新版本。";
+                                    notice = "您当前的插件是最新版本：v" + newest;
                                 } else {
-                                    notice = "插件需要更新，当前版本：v" + now + "，最新版本：" + newest + "。<a href=\'https://github.com/smallfawn/GithubFileTypecho\'>点击这里</a>获取最新版本。";
+                                    notice = "插件需要更新，当前版本：v" + now + "，最新版本：v" + newest + "。<a href=\'https://github.com/AyagawaSeirin/UploadGithubForTypecho\'>点击这里</a>获取最新版本。";
                                 }
-                                $(\'#GithubFileTypecho-check-update\').html(notice);
+                                $(\'#UploadGithubForTypecho-check-update\').html(notice);
                             },
                             error: function (jqXHR, textStatus, errorThrown) {
                                 notice = "检查更新失败，请手动访问插件项目地址获取更新。";
-                                $(\'#GithubFileTypecho-check-update\').html(notice);
+                                $(\'#UploadGithubForTypecho-check-update\').html(notice);
                             }
                         });
                         
@@ -101,75 +104,58 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         ';
         $desc1 = new Typecho_Widget_Helper_Form_Element_Text('desc1', NULL, '', _t('插件使用说明：'), _t("
         <ol>
-        <li>本插件用于将文章附件(如图片)上传至您的(公开的)Github的仓库中，并使用raw.github访问仓库文件达到优化文件访问速度的目的。<br></li>
-        <li>原作者项目地址：<a href='https://github.com/AyagawaSeirin/UploadGithubForTypecho' target='_blank'>https://github.com/AyagawaSeirin/UploadGithubForTypecho</a><br></li>
-        <li>小鹿修改项目仓库：<a href='https://github.com/smallfawn/GithubFileTypecho' target='_blank'>
-        https://github.com/smallfawn/GithubFileTypecho</a><br></li>
-        <li>插件使用说明与教程：插件上传至/usr/plugins/目录下解压，在网站后台启用插件后按说明配置即可<br></li>
+        <li>本插件用于将文章附件(如图片)上传至您的(公开的)Github的仓库中，并使用jsDelivr访问仓库文件达到优化文件访问速度的目的。了解jsDelivr应用于博客中的优势，您可以<a href='https://qwq.best/dev/113.html' target='_blank'>点击这里</a>。<br></li>
+        <li>项目地址：<a href='https://github.com/AyagawaSeirin/UploadGithubForTypecho' target='_blank'>https://github.com/AyagawaSeirin/UploadGithubForTypecho</a><br></li>
+        <li>插件使用说明与教程：<a href='https://www.bilibili.com/read/cv4627037' target='_blank'>https://www.bilibili.com/read/cv4627037</a><br></li>
         <li>插件不会验证配置的正确性，请自行确认配置信息正确，否则不能正常使用。<br></li>
         <li>插件会替换所有之前上传的文件的链接，若启用插件前存在已上传的文件，请自行将其上传至仓库相同目录中以保证正常显示；同时，禁用插件也会导致链接恢复。上传的文件保存在本地的问题请看下面相关配置项。</li>
-        <li>注意：</li>
+        <li>注意：由于CDN缓存问题，修改文件后访问链接可能仍然是旧文件，所以建议删掉旧文件再上传新文件，不建议使用修改文件功能。jsDelivr刷新缓存功能暂未推出，推出后本插件会及时更新。</li>
         <li>Github API限制每个IP每小时只能请求60次接口，请控制您操作图片(上传修改删除)的频率。</li>
-        <li>二次修改作者author:小鹿 修复jsDNS在国内无法访问问题，增加github加速代理</li>
-        <li>代理加速请带https://和结尾要带/否则无法正常使用</li>
         </ol>
         "));
-        $github_user = new Typecho_Widget_Helper_Form_Element_Text(
-            'githubUser',
-            NULL,
-            '',
-            _t('Github用户名'),
-            _t('您的Github用户名')
-        );
-        $github_repo = new Typecho_Widget_Helper_Form_Element_Text(
-            'githubRepo',
-            NULL,
-            '',
-            _t('Github仓库名'),
-            _t('您的Github仓库名')
-        );
-        $github_token = new Typecho_Widget_Helper_Form_Element_Text('githubToken', NULL, '', _t('Github账号token'), _t('不知道如何获取账号token请百度'));
-        $github_directory = new Typecho_Widget_Helper_Form_Element_Text(
-            'githubDirectory',
-            NULL,
-            '/usr/uploads',
-            _t('Github仓库内的上传目录'),
-            _t('比如/usr/uploads，最后一位不需要斜杠')
-        );
+        $github_user = new Typecho_Widget_Helper_Form_Element_Text('githubUser',
+            NULL, '', _t('Github用户名'), _t('您的Github用户名'));
+        $github_repo = new Typecho_Widget_Helper_Form_Element_Text('githubRepo',
+            NULL, '', _t('Github仓库名'), _t('您的Github仓库名'));
         $github_branch = new Typecho_Widget_Helper_Form_Element_Text(
-            'githubBranch',
-            NULL,
-            'main',
-            _t('Github仓库的分支'),
-            _t('大部分为main和master默认为main')
+                'githubBranch',
+                NULL,
+                'main',
+                _t('Github仓库的分支'),
+                _t('大部分为main和master默认为main')
+            );
+        $github_api_proxy = new Typecho_Widget_Helper_Form_Element_Text('githubApiProxy',
+            NULL, 'https://ghproxy.smallfawn.work/', _t('GithubApi代理'), _t('GithubApi代理'));
+        $github_proxy = new Typecho_Widget_Helper_Form_Element_Text(
+                'githubProxy',
+                NULL,
+                'http://ghproxy.net/',
+                _t('Github加速代理'),
+                _t('Github加速代理，如果上面不可用则百度搜索其他代理')
         );
-        $url_type = new Typecho_Widget_Helper_Form_Element_Select('urlType', array('directtest' => '访问最新版本', 'direct' => '直接访问'), 'latest', _t('文件链接访问方式：'), _t('建议选择"访问最新版本"。若修改图片，直接访问方式不方便更新缓存。'));
+        $github_token = new Typecho_Widget_Helper_Form_Element_Text('githubToken', NULL, '', _t('Github账号token'), _t('不知道如何获取账号token请<a href="https://qwq.best/dev/151.html" target="_blank">点击这里</a>'));
+        $github_directory = new Typecho_Widget_Helper_Form_Element_Text('githubDirectory',
+            NULL, '/usr/uploads', _t('Github仓库内的上传目录'), _t('比如/usr/uploads，最后一位不需要斜杠'));
+        $url_type = new Typecho_Widget_Helper_Form_Element_Select('urlType', array('latest' => '访问最新版本', 'direct' => '直接访问'), 'latest', _t('文件链接访问方式：'), _t('建议选择"访问最新版本"。若修改图片，直接访问方式不方便更新缓存。'));
         $desc3 = new Typecho_Widget_Helper_Form_Element_Text('desc3', NULL, '', _t('由于Linux权限问题，可能会由于无法创建目录导致文件保存到本地失败而报错异常，请给予本地上传目录777权限。<br>您也可以选择不保存到本地，但可能导致您的主题或其他插件的某些功能异常。<br>您也可以在每一月手动创建当月的目录，避免出现目录创建失败问题（推荐）。'));
         $if_save = new Typecho_Widget_Helper_Form_Element_Select('ifSave', array('save' => '保存到本地', 'notsave' => '不保存到本地'), 'save', _t('是否保存在本地：'), _t('是否将上传的文件保存在本地。'));
         $desc2 = new Typecho_Widget_Helper_Form_Element_Text('desc2', NULL, '', _t('以下两个参数为选填，留空则为仓库所有者信息。若填写则必须两个都填写。如果您不知道该如何填写，默认即可，不需要修改。'));
-        $commit_name = new Typecho_Widget_Helper_Form_Element_Text('commitName', NULL, 'GithubFileTypecho', _t('提交文件者名称'), _t('提交Commit的提交者名称，留空则为仓库所属者。'));
-        $commit_email = new Typecho_Widget_Helper_Form_Element_Text('commitEmail', NULL, 'xxx@xxx.com', _t('提交文件者邮箱'), _t('提交Commit的提交者邮箱，留空则为仓库所属者。'));
-        $github_proxy = new Typecho_Widget_Helper_Form_Element_Text(
-            'githubProxy',
-            NULL,
-            'http://ghproxy.com/',
-            _t('Github加速代理'),
-            _t('Github加速代理，如果上面不可用则百度搜索其他代理')
-        );
-
+        $commit_name = new Typecho_Widget_Helper_Form_Element_Text('commitName', NULL, 'UploadGithubForTypecho', _t('提交文件者名称'), _t('提交Commit的提交者名称，留空则为仓库所属者。'));
+        $commit_email = new Typecho_Widget_Helper_Form_Element_Text('commitEmail', NULL, 'UploadGithubForTypecho@typecho.com', _t('提交文件者邮箱'), _t('提交Commit的提交者邮箱，留空则为仓库所属者。'));
         $form->addInput($desc1);
         $form->addInput($github_user->addRule('required', _t('请输入Github用户名')));
         $form->addInput($github_repo->addRule('required', _t('请输入Github仓库名')));
+        $form->addInput($github_branch->addRule('required', _t('请输入Github仓库的分支')));
+        $form->addInput($github_api_proxy->addRule('required', _t('请输入GithubApi代理')));
+        $form->addInput($github_proxy->addRule('required', _t('请输入Github加速代理')));
         $form->addInput($github_token->addRule('required', _t('请输入Github账号token')));
         $form->addInput($github_directory->addRule('required', _t('请输入Github上传目录')));
-        $form->addInput($github_branch->addRule('required', _t('请输入Github仓库分支')));
         $form->addInput($url_type);
         $form->addInput($desc3);
         $form->addInput($if_save);
         $form->addInput($desc2);
         $form->addInput($commit_name);
         $form->addInput($commit_email);
-        $form->addInput($github_proxy->addRule('required', _t('请输入Github加速地址')));
     }
 
     /**
@@ -187,11 +173,11 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
             return false;
         }
         //获取设置参数
-        $options = Typecho_Widget::widget('Widget_Options')->plugin('GithubFileTypecho');
+        $options = Typecho_Widget::widget('Widget_Options')->plugin('UploadGithubForTypecho');
         //获取文件名
         $date = new Typecho_Date($options->gmtTime);
-        $fileDir_relatively = self::getUploadDir(true) . '/' . $date->year . '/' . $date->month . '/' . $date->day;
-        $fileDir = self::getUploadDir(false) . '/' . $date->year . '/' . $date->month . '/' . $date->day;
+        $fileDir_relatively = self::getUploadDir(true) . '/' . $date->year . '/' . $date->month;
+        $fileDir = self::getUploadDir(false) . '/' . $date->year . '/' . $date->month;
         $fileName = sprintf('%u', crc32(uniqid())) . '.' . $ext;
         $path_relatively = $fileDir_relatively . '/' . $fileName;
         $path = $fileDir . '/' . $fileName;
@@ -223,7 +209,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
             "Authorization: token " . $options->githubToken
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path_relatively);
+        curl_setopt($ch, CURLOPT_URL, "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path_relatively );
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
@@ -234,7 +220,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         curl_close($ch);
 
         if ($http_code != 201) {
-            $output = json_decode($output, true);
+            $output = json_decode($output,true);
             self::writeErrorLog($path_relatively, "[Github][upload][" . $http_code . "]" . $output['message']);
         }
 
@@ -278,7 +264,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
             return false;
         }
         //获取设置参数
-        $options = Typecho_Widget::widget('Widget_Options')->plugin('GithubFileTypecho');
+        $options = Typecho_Widget::widget('Widget_Options')->plugin('UploadGithubForTypecho');
         //获取文件路径
         $path = $content['attachment']->path;
         //获得上传文件
@@ -290,7 +276,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         $fileContent = file_get_contents($uploadfile);
 
         //判断仓库内相对路径
-        $filename = __TYPECHO_ROOT_DIR__ . $path; //本地文件绝对路径
+        $filename = __TYPECHO_ROOT_DIR__ . $path;//本地文件绝对路径
         $github_path = $options->githubDirectory . str_replace(self::getUploadDir(), "", $content['attachment']->path);
 
         //获取文件sha
@@ -299,7 +285,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
             "User-Agent:" . $options->githubRepo
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path);
+        curl_setopt($ch, CURLOPT_URL,  "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -322,12 +308,11 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
             $data['committer'] = $committer;
         }
         $header = array(
-            "Content-Type:application/vnd.github.v3.json",
-            "User-Agent:" . $options->githubRepo,
-            "Authorization: token " . $options->githubToken
+            "Content-Type:application/json",
+            "User-Agent:" . $options->githubRepo
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path_relatively );
+        curl_setopt($ch, CURLOPT_URL,  "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $path . "?access_token=" . $options->githubToken);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
@@ -338,7 +323,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         curl_close($ch);
 
         if ($http_code != 200) {
-            $output = json_decode($output, true);
+            $output = json_decode($output,true);
             self::writeErrorLog($github_path, "[Github][modify][" . $http_code . "]" . $output['message']);
         }
 
@@ -370,7 +355,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
     public static function deleteHandle(array $content)
     {
         //获取设置参数
-        $options = Typecho_Widget::widget('Widget_Options')->plugin('GithubFileTypecho');
+        $options = Typecho_Widget::widget('Widget_Options')->plugin('UploadGithubForTypecho');
 
         //判断仓库内相对路径
         $filename = __TYPECHO_ROOT_DIR__ . $content['attachment']->path;
@@ -382,7 +367,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
             "User-Agent:" . $options->githubRepo
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path);
+        curl_setopt($ch, CURLOPT_URL,  "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -408,7 +393,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
             "User-Agent:" . $options->githubRepo
         );
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path . "?access_token=" . $options->githubToken);
+        curl_setopt($ch, CURLOPT_URL, "https://ghproxy.smallfawn.work/" . "https://api.github.com/repos/" . $options->githubUser . "/" . $options->githubRepo . "/contents" . $github_path . "?access_token=" . $options->githubToken);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -419,7 +404,7 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
         curl_close($ch);
 
         if ($http_code != 200) {
-            $output = json_decode($output, true);
+            $output = json_decode($output,true);
             self::writeErrorLog($github_path, "[Github][delete][" . $http_code . "]" . $output['message']);
         }
         //删除本地文件
@@ -435,8 +420,10 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
      */
     public static function attachmentDataHandle($content)
     {
-        $options = Typecho_Widget::widget('Widget_Options')->plugin('GithubFileTypecho');
-        $filePath = $options->githubProxy . "https://raw.githubusercontent.com/" . $options->githubUser . "/" . $options->githubRepo . "/" . $options->githubBranch . "/" . $content['attachment']->path;
+        $options = Typecho_Widget::widget('Widget_Options')->plugin('UploadGithubForTypecho');
+        //$filePath = "https://cdn.jsdelivr.net/gh/" . $options->githubUser . "/" . $options->githubRepo . "@latest" . $content['attachment']->path;
+        //https://ghproxy.net/https://raw.githubusercontent.com/smallfawn/typechocloud/refs/heads/main/usr/uploads/2025/01/2071610814.jpg
+        $filePath = $options->githubProxy . "https://raw.githubusercontent.com/" . $options->githubUser . "/" . $options->githubRepo . "/refs/heads/" . $options->githubBranch . "/" . $content['attachment']->path;
         return file_get_contents($filePath);
     }
 
@@ -447,12 +434,14 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
     public static function attachmentHandle($content)
     {
         //获取设置参数
-        $options = Typecho_Widget::widget('Widget_Options')->plugin('GithubFileTypecho');
+        $options = Typecho_Widget::widget('Widget_Options')->plugin('UploadGithubForTypecho');
         $latest = "";
-        if ($options->urlType == "latest") {
+        /*if ($options->urlType == "latest") {
             $latest = "@latest";
-        }
-        return Typecho_Common::url($content['attachment']->path, $options->githubProxy . "https://raw.githubusercontent.com/" . $options->githubUser . "/" . $options->githubRepo . "/" . $options->githubBranch . "/" . $latest);
+        }*/
+        //return Typecho_Common::url($content['attachment']->path, "https://cdn.jsdelivr.net/gh/" . $options->githubUser . "/" . $options->githubRepo . $latest);
+        //https://ghproxy.net/https://raw.githubusercontent.com/smallfawn/typechocloud/refs/heads/main/usr/uploads/2025/01/2071610814.jpg
+        return Typecho_Common::url($content['attachment']->path, $options->githubProxy . "https://raw.githubusercontent.com/" . $options->githubUser . "/" . $options->githubRepo . "/refs/heads/" . $options->githubBranch . "/" . $latest);
     }
 
     private static function writeErrorLog($path, $content)
@@ -493,10 +482,8 @@ class GithubFileTypecho_Plugin implements Typecho_Plugin_Interface
                 return self::UPLOAD_DIR;
             }
         } else {
-            return Typecho_Common::url(
-                defined('__TYPECHO_UPLOAD_DIR__') ? __TYPECHO_UPLOAD_DIR__ : self::UPLOAD_DIR,
-                defined('__TYPECHO_UPLOAD_ROOT_DIR__') ? __TYPECHO_UPLOAD_ROOT_DIR__ : __TYPECHO_ROOT_DIR__
-            );
+            return Typecho_Common::url(defined('__TYPECHO_UPLOAD_DIR__') ? __TYPECHO_UPLOAD_DIR__ : self::UPLOAD_DIR,
+                defined('__TYPECHO_UPLOAD_ROOT_DIR__') ? __TYPECHO_UPLOAD_ROOT_DIR__ : __TYPECHO_ROOT_DIR__);
         }
     }
 
