@@ -106,6 +106,7 @@ class UploadGithubForTypecho_Plugin implements Typecho_Plugin_Interface
         <ol>
         <li>本插件用于将文章附件(如图片)上传至您的(公开的)Github的仓库中，并使用jsDelivr访问仓库文件达到优化文件访问速度的目的。了解jsDelivr应用于博客中的优势，您可以<a href='https://qwq.best/dev/113.html' target='_blank'>点击这里</a>。<br></li>
         <li>项目地址：<a href='https://github.com/AyagawaSeirin/UploadGithubForTypecho' target='_blank'>https://github.com/AyagawaSeirin/UploadGithubForTypecho</a><br></li>
+        <li>魔改地址：<a href='https://github.com/smallfawn/UploadGithubForTypecho' target='_blank'>https://github.com/smallfawn/UploadGithubForTypecho</a><br></li>
         <li>插件使用说明与教程：<a href='https://www.bilibili.com/read/cv4627037' target='_blank'>https://www.bilibili.com/read/cv4627037</a><br></li>
         <li>插件不会验证配置的正确性，请自行确认配置信息正确，否则不能正常使用。<br></li>
         <li>插件会替换所有之前上传的文件的链接，若启用插件前存在已上传的文件，请自行将其上传至仓库相同目录中以保证正常显示；同时，禁用插件也会导致链接恢复。上传的文件保存在本地的问题请看下面相关配置项。</li>
